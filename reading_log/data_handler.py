@@ -81,7 +81,7 @@ class DataHandler:
             json.dump([asdict(e) for e in entries], f, ensure_ascii=False, indent=2)
 
     def search_entries(self, query: str) -> List[ReadingLogEntry]:
-        """タイトルまたは著者名でエントリーを検索します。"""
+        """タイトル、著者名、またはコメントでエントリーを検索します。"""
         entries = self.load_entries()
         if not query:
             return entries
@@ -89,7 +89,7 @@ class DataHandler:
         query = query.lower()
         return [
             e for e in entries 
-            if query in e.title.lower() or query in e.author.lower()
+            if query in e.title.lower() or query in e.author.lower() or query in e.comment.lower()
         ]
     
     def update_entry(self, entry_id: str, updated_entry: ReadingLogEntry) -> bool:

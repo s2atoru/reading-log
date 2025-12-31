@@ -207,7 +207,7 @@ async function loadEntries() {
                 <td>${escapeHtml(entry.author)}</td>
                 <td>${positionStr}</td>
                 <td>
-                    <button class="btn-edit" onclick='editEntry(${JSON.stringify(entry)})'>編集</button>
+                    <button class="btn-edit" onclick='editEntry(${JSON.stringify(entry)})'>確認</button>
                     <button class="btn-delete" onclick="deleteEntry('${entry.id}', '${escapeHtml(entry.title)}')">削除</button>
                 </td>
             `;
