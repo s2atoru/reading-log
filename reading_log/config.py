@@ -56,7 +56,7 @@ class Config:
     @property
     def min_page(self) -> int:
         """ページ番号の最小値を取得"""
-        return self.get('validation', 'min_page', 1)
+        return self.get('validation', 'min_page', 0)
     
     @property
     def max_page(self) -> int:

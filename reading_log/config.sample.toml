@@ -8,7 +8,7 @@ path = "~/Library/Mobile Documents/com~apple~CloudDocs/reading-logs/log.json"
 
 [validation]
 # ページ番号の最小値
-min_page = 1
+min_page = 0
 
 # ページ番号の最大値
 max_page = 1000
