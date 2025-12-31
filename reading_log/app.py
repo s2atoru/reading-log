@@ -23,11 +23,29 @@ def get_entries():
         'author': e.author,
         'date': e.date,
         'page': e.page,
+        'page_end': e.page_end,
         'chapter': e.chapter,
+        'chapter_end': e.chapter_end,
         'section': e.section,
+        'section_end': e.section_end,
         'comment': e.comment,
         'timestamp': e.timestamp
     } for e in entries])
+
+@app.route('/api/autocomplete', methods=['GET'])
+def get_autocomplete():
+    """オートコンプリート用のタイトルと著者一覧を取得"""
+    entries = data_handler.load_entries()
+    
+    # 重複を除いたタイトルと著者のリストを作成
+    titles = sorted(set(e.title for e in entries if e.title.strip()))
+    authors = sorted(set(e.author for e in entries if e.author.strip()))
+    
+    return jsonify({
+        'titles': titles,
+        'authors': authors
+    })
+
 
 @app.route('/api/save', methods=['POST'])
 def save_entry():

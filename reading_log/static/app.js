@@ -1,9 +1,40 @@
+```javascript
 // 今日の日付をデフォルトで設定
 document.addEventListener('DOMContentLoaded', function () {
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('date').value = today;
     loadEntries();
+    loadAutocomplete();
 });
+
+// オートコンプリートデータを読み込む
+async function loadAutocomplete() {
+    try {
+        const response = await fetch('/api/autocomplete');
+        const data = await response.json();
+        
+        // タイトルの候補を設定
+        const titleDatalist = document.getElementById('title-suggestions');
+        titleDatalist.innerHTML = '';
+        data.titles.forEach(title => {
+            const option = document.createElement('option');
+            option.value = title;
+            titleDatalist.appendChild(option);
+        });
+        
+        // 著者の候補を設定
+        const authorDatalist = document.getElementById('author-suggestions');
+        authorDatalist.innerHTML = '';
+        data.authors.forEach(author => {
+            const option = document.createElement('option');
+            option.value = author;
+            authorDatalist.appendChild(option);
+        });
+    } catch (error) {
+        console.error('オートコンプリートデータの読み込みに失敗しました:', error);
+    }
+}
+
 
 // フォーム送信処理
 document.getElementById('entryForm').addEventListener('submit', async function (e) {
@@ -26,7 +57,7 @@ document.getElementById('entryForm').addEventListener('submit', async function (
     };
 
     try {
-        const url = isEditing ? `/api/update/${editingId}` : '/api/save';
+        const url = isEditing ? `/ api / update / ${ editingId } ` : '/api/save';
         const method = isEditing ? 'PUT' : 'POST';
 
         const response = await fetch(url, {
@@ -49,8 +80,8 @@ document.getElementById('entryForm').addEventListener('submit', async function (
 
             // 一覧を更新
             loadEntries();
-
-            // 3秒後にメッセージを消す
+            loadAutocomplete(); // オートコンプリートも更新
+             // 3秒後にメッセージを消す
             setTimeout(() => {
                 statusDiv.textContent = '';
                 statusDiv.className = 'status-message';
@@ -101,34 +132,34 @@ function cancelEdit() {
 
 // エントリーを削除
 async function deleteEntry(entryId, title) {
-    if (!confirm(`「${title}」を削除しますか？`)) {
+    if (!confirm(`「${ title }」を削除しますか？`)) {
         return;
     }
 
     try {
-        const response = await fetch(`/api/delete/${entryId}`, {
-            method: 'DELETE'
+        const response = await fetch(`/ api / delete/${entryId}`, {
+method: 'DELETE'
         });
 
-        const result = await response.json();
+const result = await response.json();
 
-        if (result.success) {
-            loadEntries();
+if (result.success) {
+    loadEntries();
 
-            const statusDiv = document.getElementById('status');
-            statusDiv.textContent = result.message;
-            statusDiv.className = 'status-message success';
+    const statusDiv = document.getElementById('status');
+    statusDiv.textContent = result.message;
+    statusDiv.className = 'status-message success';
 
-            setTimeout(() => {
-                statusDiv.textContent = '';
-                statusDiv.className = 'status-message';
-            }, 3000);
-        } else {
-            alert('削除に失敗しました: ' + result.error);
-        }
+    setTimeout(() => {
+        statusDiv.textContent = '';
+        statusDiv.className = 'status-message';
+    }, 3000);
+} else {
+    alert('削除に失敗しました: ' + result.error);
+}
     } catch (error) {
-        alert('エラーが発生しました: ' + error.message);
-    }
+    alert('エラーが発生しました: ' + error.message);
+}
 }
 
 // エントリー一覧を読み込む
