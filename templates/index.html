@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reading Log</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <h1>📚 Reading Log</h1>
+
+        <div class="main-layout">
+            <!-- 左パネル: 入力フォーム -->
+            <div class="panel input-panel">
+                <h2 id="formTitle">入力フォーム</h2>
+                <input type="hidden" id="editingId" value="">
+                <form id="entryForm">
+                    <div class="form-group">
+                        <label for="date">日付:</label>
+                        <input type="date" id="date" name="date" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="title">タイトル:</label>
+                        <input type="text" id="title" name="title" required placeholder="例: 吾輩は猫である">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="author">著者（複数可、カンマ区切り）:</label>
+                        <textarea id="author" name="author" rows="2" placeholder="例: 夏目漱石, 芥川龍之介"></textarea>
+                    </div>
+
+                    <fieldset class="position-group">
+                        <legend>位置情報（いずれか1つ必須）</legend>
+                        <div class="position-fields">
+                            <div class="form-group">
+                                <label for="page">ページ（開始）:</label>
+                                <input type="number" id="page" name="page" min="1" max="1000" placeholder="1-1000">
+                            </div>
+                            <div class="form-group">
+                                <label for="page_end">ページ（終了）:</label>
+                                <input type="number" id="page_end" name="page_end" min="1" max="1000"
+                                    placeholder="オプション">
+                            </div>
+                            <div class="form-group">
+                                <label for="chapter">章（開始）:</label>
+                                <input type="text" id="chapter" name="chapter" placeholder="例: 1">
+                            </div>
+                            <div class="form-group">
+                                <label for="chapter_end">章（終了）:</label>
+                                <input type="text" id="chapter_end" name="chapter_end" placeholder="オプション">
+                            </div>
+                            <div class="form-group">
+                                <label for="section">節（開始）:</label>
+                                <input type="text" id="section" name="section" placeholder="例: Intro">
+                            </div>
+                            <div class="form-group">
+                                <label for="section_end">節（終了）:</label>
+                                <input type="text" id="section_end" name="section_end" placeholder="オプション">
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <div class="form-group">
+                        <label for="comment">コメント:</label>
+                        <textarea id="comment" name="comment" rows="4" placeholder="感想やメモ"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-primary" id="submitBtn">保存</button>
+                    <button type="button" class="btn-cancel" id="cancelBtn" style="display:none;"
+                        onclick="cancelEdit()">キャンセル</button>
+                    <div id="status" class="status-message"></div>
+                </form>
+            </div>
+
+            <!-- 右パネル: 検索と一覧 -->
+            <div class="panel summary-panel">
+                <h2>検索 / 一覧</h2>
+
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="タイトルまたは著者で検索...">
+                    <button onclick="loadEntries()" class="btn-secondary">検索</button>
+                </div>
+
+                <div class="table-container">
+                    <table id="entriesTable">
+                        <thead>
+                            <tr>
+                                <th>日付</th>
+                                <th>タイトル</th>
+                                <th>著者</th>
+                                <th>位置</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="entriesBody">
+                            <!-- データはJavaScriptで動的に挿入 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+
+</html>
