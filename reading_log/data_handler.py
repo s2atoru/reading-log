@@ -10,6 +10,10 @@ from typing import List, Optional
 logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger(__name__)
 
+# 定数
+MAX_PAGE = 1000
+MIN_PAGE = 1
+
 # デフォルトのログディレクトリ（iCloud Drive）
 LOG_DIR = Path.home() / "Library" / "Mobile Documents" / "com~apple~CloudDocs" / "reading-logs"
 LOG_FILE = LOG_DIR / "log.json"
@@ -87,3 +91,31 @@ class DataHandler:
             e for e in entries 
             if query in e.title.lower() or query in e.author.lower()
         ]
+    
+    def update_entry(self, entry_id: str, updated_entry: ReadingLogEntry) -> bool:
+        """エントリーを更新します。"""
+        entries = self.load_entries()
+        
+        for i, entry in enumerate(entries):
+            if entry.id == entry_id:
+                updated_entry.validate()
+                entries[i] = updated_entry
+                
+                with open(self.storage_path, 'w', encoding='utf-8') as f:
+                    json.dump([asdict(e) for e in entries], f, ensure_ascii=False, indent=2)
+                return True
+        
+        return False
+    
+    def delete_entry(self, entry_id: str) -> bool:
+        """エントリーを削除します。"""
+        entries = self.load_entries()
+        original_count = len(entries)
+        entries = [e for e in entries if e.id != entry_id]
+        
+        if len(entries) == original_count:
+            return False
+        
+        with open(self.storage_path, 'w', encoding='utf-8') as f:
+            json.dump([asdict(e) for e in entries], f, ensure_ascii=False, indent=2)
+        return True

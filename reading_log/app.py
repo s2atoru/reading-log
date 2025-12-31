@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, jsonify
 import webbrowser
 import threading
-from pathlib import Path
 from reading_log.data_handler import DataHandler, ReadingLogEntry
+from reading_log.validators import validate_page_range
 
 app = Flask(__name__)
 data_handler = DataHandler()
@@ -54,25 +54,12 @@ def save_entry():
         data = request.json
         
         # ページのバリデーション
-        page = None
-        page_end = None
-        if data.get('page'):
-            try:
-                page = int(data['page'])
-                if page < 1 or page > 1000:
-                    return jsonify({'success': False, 'error': 'ページは1から1000の範囲で入力してください。'}), 400
-            except ValueError:
-                return jsonify({'success': False, 'error': f'ページには数値を入力してください: {data["page"]}'}), 400
-        
-        if data.get('page_end'):
-            try:
-                page_end = int(data['page_end'])
-                if page_end < 1 or page_end > 1000:
-                    return jsonify({'success': False, 'error': 'ページ終了は1から1000の範囲で入力してください。'}), 400
-                if page and page_end < page:
-                    return jsonify({'success': False, 'error': 'ページ終了は開始ページ以上である必要があります。'}), 400
-            except ValueError:
-                return jsonify({'success': False, 'error': f'ページ終了には数値を入力してください: {data["page_end"]}'}), 400
+        page, page_end, error = validate_page_range(
+            data.get('page'),
+            data.get('page_end')
+        )
+        if error:
+            return jsonify({'success': False, 'error': error}), 400
         
         entry = ReadingLogEntry(
             title=data.get('title', ''),
@@ -102,64 +89,45 @@ def update_entry(entry_id):
         data = request.json
         
         # ページのバリデーション
-        page = None
-        page_end = None
-        if data.get('page'):
-            try:
-                page = int(data['page'])
-                if page < 1 or page > 1000:
-                    return jsonify({'success': False, 'error': 'ページは1から1000の範囲で入力してください。'}), 400
-            except ValueError:
-                return jsonify({'success': False, 'error': f'ページには数値を入力してください: {data["page"]}'}), 400
+        page, page_end, error = validate_page_range(
+            data.get('page'),
+            data.get('page_end')
+        )
+        if error:
+            return jsonify({'success': False, 'error': error}), 400
         
-        if data.get('page_end'):
-            try:
-                page_end = int(data['page_end'])
-                if page_end < 1 or page_end > 1000:
-                    return jsonify({'success': False, 'error': 'ページ終了は1から1000の範囲で入力してください。'}), 400
-                if page and page_end < page:
-                    return jsonify({'success': False, 'error': 'ページ終了は開始ページ以上である必要があります。'}), 400
-            except ValueError:
-                return jsonify({'success': False, 'error': f'ページ終了には数値を入力してください: {data["page_end"]}'}), 400
-        
-        # 既存のエントリーを読み込み
+        # 既存のエントリーを取得してタイムスタンプを保持
         entries = data_handler.load_entries()
-        
-        # 対象のエントリーを検索
-        target_entry = None
-        for i, entry in enumerate(entries):
+        original_timestamp = None
+        for entry in entries:
             if entry.id == entry_id:
-                # エントリーを更新
-                entries[i] = ReadingLogEntry(
-                    id=entry_id,  # IDは保持
-                    title=data.get('title', ''),
-                    author=data.get('author', ''),
-                    date=data.get('date', ''),
-                    page=page,
-                    page_end=page_end,
-                    chapter=data.get('chapter') or None,
-                    chapter_end=data.get('chapter_end') or None,
-                    section=data.get('section') or None,
-                    section_end=data.get('section_end') or None,
-                    comment=data.get('comment', ''),
-                    timestamp=entry.timestamp  # 元のタイムスタンプを保持
-                )
-                target_entry = entries[i]
+                original_timestamp = entry.timestamp
                 break
         
-        if not target_entry:
+        if not original_timestamp:
             return jsonify({'success': False, 'error': 'エントリーが見つかりません'}), 404
         
-        # バリデーション
-        target_entry.validate()
+        # 更新されたエントリーを作成
+        updated_entry = ReadingLogEntry(
+            id=entry_id,
+            title=data.get('title', ''),
+            author=data.get('author', ''),
+            date=data.get('date', ''),
+            page=page,
+            page_end=page_end,
+            chapter=data.get('chapter') or None,
+            chapter_end=data.get('chapter_end') or None,
+            section=data.get('section') or None,
+            section_end=data.get('section_end') or None,
+            comment=data.get('comment', ''),
+            timestamp=original_timestamp
+        )
         
-        # 保存
-        import json
-        from dataclasses import asdict
-        with open(data_handler.storage_path, 'w', encoding='utf-8') as f:
-            json.dump([asdict(e) for e in entries], f, ensure_ascii=False, indent=2)
-        
-        return jsonify({'success': True, 'message': '更新しました！'})
+        # DataHandlerを使用して更新
+        if data_handler.update_entry(entry_id, updated_entry):
+            return jsonify({'success': True, 'message': '更新しました！'})
+        else:
+            return jsonify({'success': False, 'error': 'エントリーが見つかりません'}), 404
         
     except ValueError as e:
         return jsonify({'success': False, 'error': str(e)}), 400
@@ -170,23 +138,10 @@ def update_entry(entry_id):
 def delete_entry(entry_id):
     """エントリーを削除"""
     try:
-        entries = data_handler.load_entries()
-        
-        # 対象のエントリーを検索して削除
-        original_count = len(entries)
-        entries = [e for e in entries if e.id != entry_id]
-        
-        if len(entries) == original_count:
+        if data_handler.delete_entry(entry_id):
+            return jsonify({'success': True, 'message': '削除しました！'})
+        else:
             return jsonify({'success': False, 'error': 'エントリーが見つかりません'}), 404
-        
-        # 保存
-        import json
-        from dataclasses import asdict
-        with open(data_handler.storage_path, 'w', encoding='utf-8') as f:
-            json.dump([asdict(e) for e in entries], f, ensure_ascii=False, indent=2)
-        
-        return jsonify({'success': True, 'message': '削除しました！'})
-        
     except Exception as e:
         return jsonify({'success': False, 'error': f'予期しないエラー: {e}'}), 500
 
