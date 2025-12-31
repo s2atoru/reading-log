@@ -42,11 +42,11 @@
                         <div class="position-fields">
                             <div class="form-group">
                                 <label for="page">ページ（開始）:</label>
-                                <input type="number" id="page" name="page" min="1" max="1000" placeholder="1-1000">
+                                <input type="number" id="page" name="page" min="0" max="1000" placeholder="0-1000">
                             </div>
                             <div class="form-group">
                                 <label for="page_end">ページ（終了）:</label>
-                                <input type="number" id="page_end" name="page_end" min="1" max="1000"
+                                <input type="number" id="page_end" name="page_end" min="0" max="1000"
                                     placeholder="オプション">
                             </div>
                             <div class="form-group">
@@ -85,8 +85,9 @@
                 <h2>検索 / 一覧</h2>
 
                 <div class="search-bar">
-                    <input type="text" id="searchInput" placeholder="タイトルまたは著者で検索...">
+                    <input type="text" id="searchInput" placeholder="タイトル、著者、またはコメントで検索...">
                     <button onclick="loadEntries()" class="btn-secondary">検索</button>
+                    <button onclick="clearSearch()" class="btn-clear">クリア</button>
                 </div>
 
                 <div class="table-container">

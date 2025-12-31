@@ -128,6 +128,15 @@ textarea {
     background: #5568d3;
 }
 
+.btn-clear {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-clear:hover {
+    background: #5a6268;
+}
+
 .btn-cancel {
     background: #6c757d;
     color: white;

@@ -226,6 +226,12 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+// 検索をクリア
+function clearSearch() {
+    document.getElementById('searchInput').value = '';
+    loadEntries();
+}
+
 // 検索フィールドでEnterキーを押したら検索
 document.getElementById('searchInput').addEventListener('keypress', function (e) {
     if (e.key === 'Enter') {
