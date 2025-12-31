@@ -8,12 +8,8 @@ Reading Log Application - Flask Web App
 import sys
 from pathlib import Path
 
-# プロジェクトルートをパスに追加
-project_root = Path(__file__).parent
-sys.path.append(str(project_root))
-
 # Flaskアプリをインポートして実行
-from app import app, open_browser
+from reading_log.app import app, open_browser
 import threading
 
 def main():

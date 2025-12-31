@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify
 import webbrowser
 import threading
 from pathlib import Path
-from src.data_handler import DataHandler, ReadingLogEntry
+from reading_log.data_handler import DataHandler, ReadingLogEntry
 
 app = Flask(__name__)
 data_handler = DataHandler()
