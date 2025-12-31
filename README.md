@@ -3,11 +3,14 @@
 読書記録を管理するためのWebアプリケーション（Flask製）
 
 ## Features
-- **記録機能**: 日付、タイトル、著者、位置情報（ページ/章/節）、コメントを記録
+- **記録機能**: 日付、タイトル、著者（複数可）、位置情報（ページ/章/節の範囲指定）、コメントを記録
 - **日本語完全対応**: ブラウザのネイティブ入力フォームで日本語IMEの問題を解決
+- **オートコンプリート**: タイトルと著者の入力時に既存データから候補を表示
 - **検索機能**: タイトルまたは著者名で絞り込み
+- **編集・削除**: 既存のエントリーを編集・削除可能
 - **バリデーション**: 必須フィールドのチェック
-- **データ永続化**: `~/Library/Mobile Documents/com~apple~CloudDocs/reading-logs/log.json` に保存
+- **設定ファイル**: `~/.config/reading-log/config.toml` で各種設定をカスタマイズ可能
+- **データ永続化**: デフォルトで `~/Library/Mobile Documents/com~apple~CloudDocs/reading-logs/log.json` に保存（設定変更可能）
 
 ## Requirements
 - Python 3.12+
@@ -45,6 +48,35 @@ uv sync
 uv run python -m reading_log
 ```
 
+## Configuration
+
+初回起動時に `~/.config/reading-log/config.toml` が自動作成されます。
+
+**設定例:**
+```toml
+[storage]
+# データ保存先のパス
+path = "~/Library/Mobile Documents/com~apple~CloudDocs/reading-logs/log.json"
+
+[validation]
+# ページ番号の範囲
+min_page = 1
+max_page = 1000
+
+[server]
+# Flaskサーバーの設定
+host = "127.0.0.1"
+port = 5000
+debug = true
+
+[ui]
+# ブラウザの自動起動
+auto_open_browser = true
+browser_delay = 1
+```
+
+設定を変更した後、アプリを再起動すると反映されます。
+
 ## Setup & Run
 
 1.  **依存関係のインストール**:
@@ -65,6 +97,10 @@ uv run python -m reading_log
 ## Usage
 - **入力フォーム**: 左パネルで読書記録を入力
     - *必須*: 日付、タイトル、位置情報（ページ/章/節のいずれか1つ）
+    - *オプション*: 著者（複数可、カンマ区切り）、範囲指定（ページ終了、章終了、節終了）、コメント
+- **オートコンプリート**: タイトルと著者の入力時に既存データから候補が表示されます
 - **保存**: 「保存」ボタンをクリック
+- **編集**: 右パネルのテーブルで「編集」ボタンをクリック
+- **削除**: 右パネルのテーブルで「削除」ボタンをクリック
 - **検索**: 右パネルの検索バーでタイトルまたは著者名を入力して「検索」ボタンをクリック
 
