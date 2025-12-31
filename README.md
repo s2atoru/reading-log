@@ -14,6 +14,37 @@
 - `uv` (推奨) または `pip`
 - モダンブラウザ (Safari, Chrome, Firefox など)
 
+## Installation
+
+### 方法1: CLIツールとしてインストール（推奨）
+
+最も簡単な方法です。`~/.local/bin`にコマンドをインストールします：
+
+```bash
+uv tool install git+https://github.com/s2atoru/reading-log.git
+```
+
+**使用方法:**
+```bash
+reading-log
+```
+
+**アンインストール:**
+```bash
+uv tool uninstall reading-log
+```
+
+### 方法2: ローカル開発
+
+リポジトリをクローンして開発モードで実行：
+
+```bash
+git clone https://github.com/s2atoru/reading-log.git
+cd reading-log
+uv sync
+uv run python -m reading_log
+```
+
 ## Setup & Run
 
 1.  **依存関係のインストール**:
@@ -23,7 +54,7 @@
 
 2.  **アプリケーションの起動**:
     ```bash
-    uv run main.py
+    uv run python -m reading_log
     ```
     
     ブラウザが自動的に開き、`http://127.0.0.1:5000` にアクセスします。
