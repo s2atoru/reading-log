@@ -10,6 +10,7 @@ from pathlib import Path
 
 # Flaskアプリをインポートして実行
 from reading_log.app import app, open_browser
+from reading_log.config import config
 import threading
 
 def main():

@@ -3,6 +3,7 @@ import webbrowser
 import threading
 from reading_log.data_handler import DataHandler, ReadingLogEntry
 from reading_log.validators import validate_page_range
+from reading_log.config import config
 
 app = Flask(__name__)
 data_handler = DataHandler()
@@ -147,7 +148,7 @@ def delete_entry(entry_id):
 
 def open_browser():
     """ブラウザを自動で開く"""
-    webbrowser.open('http://127.0.0.1:5000')
+    webbrowser.open(f'http://{config.server_host}:{config.server_port}')
 
 if __name__ == '__main__':
     # 1秒後にブラウザを開く

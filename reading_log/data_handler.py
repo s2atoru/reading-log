@@ -5,18 +5,18 @@ from dataclasses import dataclass, asdict, field
 from datetime import datetime, date
 from pathlib import Path
 from typing import List, Optional
+from reading_log.config import config
 
 # ログ設定
 logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger(__name__)
 
-# 定数
-MAX_PAGE = 1000
-MIN_PAGE = 1
+# 定数（設定ファイルから取得）
+MAX_PAGE = config.max_page
+MIN_PAGE = config.min_page
 
-# デフォルトのログディレクトリ（iCloud Drive）
-LOG_DIR = Path.home() / "Library" / "Mobile Documents" / "com~apple~CloudDocs" / "reading-logs"
-LOG_FILE = LOG_DIR / "log.json"
+# デフォルトのログディレクトリ（設定ファイルから取得）
+LOG_FILE = config.storage_path
 
 @dataclass
 class ReadingLogEntry:

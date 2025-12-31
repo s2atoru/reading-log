@@ -1,0 +1,31 @@
+# Reading Log Configuration File
+# This file is located at ~/.config/reading-log/config.toml
+
+[storage]
+# データ保存先のパス
+# デフォルト: ~/Library/Mobile Documents/com~apple~CloudDocs/reading-logs/log.json
+path = "~/Library/Mobile Documents/com~apple~CloudDocs/reading-logs/log.json"
+
+[validation]
+# ページ番号の最小値
+min_page = 1
+
+# ページ番号の最大値
+max_page = 1000
+
+[server]
+# Flaskサーバーのホスト
+host = "127.0.0.1"
+
+# Flaskサーバーのポート
+port = 5000
+
+# デバッグモード
+debug = true
+
+[ui]
+# ブラウザを自動的に開く
+auto_open_browser = true
+
+# ブラウザを開くまでの遅延（秒）
+browser_delay = 1
