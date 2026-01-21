@@ -18,15 +18,16 @@ def main():
     print("📚 Reading Log Application")
     print("=" * 50)
     print("ブラウザが自動的に開きます...")
-    print("URL: http://127.0.0.1:5000")
+    print(f"URL: http://{config.server_host}:{config.server_port}")
     print("終了するには Ctrl+C を押してください")
     print("=" * 50)
-    
-    # 1秒後にブラウザを開く
-    threading.Timer(1, open_browser).start()
-    
+
+    # 設定された遅延後にブラウザを開く
+    if config.auto_open_browser:
+        threading.Timer(config.browser_delay, open_browser).start()
+
     # Flaskアプリを起動
-    app.run(debug=True, use_reloader=False)
+    app.run(host=config.server_host, port=config.server_port, debug=config.debug, use_reloader=False)
 
 if __name__ == "__main__":
     main()
